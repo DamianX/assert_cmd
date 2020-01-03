@@ -7,6 +7,7 @@ use std::io;
 use std::io::Write;
 use std::path;
 use std::process;
+use std::thread;
 
 use crate::assert::Assert;
 use crate::assert::OutputAssertExt;
@@ -65,7 +66,8 @@ impl Command {
     ///
     /// # Examples
     ///
-    /// ```rust
+    #[cfg_attr(not(target_os="windows"), doc = "```rust")]
+    #[cfg_attr(target_os="windows", doc = "```no_run")]
     /// use assert_cmd::Command;
     ///
     /// let mut cmd = Command::new("cat")
@@ -101,10 +103,11 @@ impl Command {
     ///
     /// # Examples
     ///
-    /// ```rust
+    #[cfg_attr(not(target_os="windows"), doc = "```rust")]
+    #[cfg_attr(target_os="windows", doc = "```rust,no_run")]
     /// use assert_cmd::Command;
     ///
-    /// let result = Command::new("echo")
+    /// let result = Command::new("hostname")
     ///     .args(&["42"])
     ///     .ok();
     /// assert!(result.is_ok());
@@ -119,7 +122,8 @@ impl Command {
     ///
     /// # Examples
     ///
-    /// ```rust
+    #[cfg_attr(not(target_os="windows"), doc = "```rust")]
+    #[cfg_attr(target_os="windows", doc = "```rust,no_run")]
     /// use assert_cmd::Command;
     ///
     /// let output = Command::new("echo")
@@ -427,12 +431,14 @@ impl Command {
 
         let mut spawned = self.cmd.spawn()?;
 
-        if let Some(buffer) = self.stdin.as_ref() {
-            spawned
-                .stdin
-                .as_mut()
-                .expect("Couldn't get mut ref to command stdin")
-                .write_all(&buffer)?;
+        let thing = spawned.stdin.take();
+        if let Some(buffer) = self.stdin.as_ref().cloned() {
+            thing
+                .map(|mut stdin| {
+                    thread::spawn(move || {
+                        stdin.write_all(&buffer).unwrap();
+                    })
+                });
         }
         Ok(spawned)
     }

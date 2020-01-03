@@ -11,7 +11,8 @@ use std::str;
 ///
 /// # Examples
 ///
-/// ```rust
+#[cfg_attr(not(target_os="windows"), doc = "```rust")]
+#[cfg_attr(target_os="windows", doc = "```no_run")]
 /// use assert_cmd::prelude::*;
 ///
 /// use std::process::Command;
@@ -32,7 +33,8 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    #[cfg_attr(not(target_os="windows"), doc = "```rust")]
+    #[cfg_attr(target_os="windows", doc = "```no_run")]
     /// use assert_cmd::prelude::*;
     ///
     /// use std::process::Command;
@@ -51,7 +53,8 @@ where
     ///
     /// # Examples
     ///
-    /// ```rust
+    #[cfg_attr(not(target_os="windows"), doc = "```rust")]
+    #[cfg_attr(target_os="windows", doc = "```no_run")]
     /// use assert_cmd::prelude::*;
     ///
     /// use std::process::Command;
@@ -135,7 +138,8 @@ impl<'c> OutputOkExt for &'c mut process::Command {
 ///
 /// # Examples
 ///
-/// ```rust
+#[cfg_attr(not(target_os="windows"), doc = "```rust")]
+#[cfg_attr(target_os="windows", doc = "```no_run")]
 /// use assert_cmd::prelude::*;
 ///
 /// use std::process::Command;
